@@ -85,7 +85,7 @@ export default function AboutContent() {
               {/* Print head rail */}
               <rect x="40" y="128" width="180" height="6" rx="3" fill="#e5e7eb" />
               {/* Print head */}
-              <rect x="90" y="120" width="32" height="20" rx="4" fill="#185FA5" opacity="0.15" stroke="#185FA5" strokeWidth="1" opacity="0.3" />
+              <rect x="90" y="120" width="32" height="20" rx="4" fill="#185FA5" opacity="0.15" stroke="#185FA5" strokeWidth="1"/>
               <rect x="99" y="140" width="14" height="8" rx="2" fill="#185FA5" opacity="0.2" />
               {/* Film/paper output */}
               <rect x="40" y="160" width="180" height="28" rx="4" fill="#fafafa" stroke="#e5e7eb" strokeWidth="1" />
