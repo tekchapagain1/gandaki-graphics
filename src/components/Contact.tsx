@@ -1,4 +1,4 @@
-const WHATSAPP_NUMBER = '977981-4137314'
+const WHATSAPP_NUMBER = '9779814137314'
 const WHATSAPP_MESSAGE = 'Hi! I want to place a custom print order with Gandaki Graphics.'
 
 export default function Contact() {

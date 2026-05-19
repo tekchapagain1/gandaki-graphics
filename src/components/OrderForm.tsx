@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 // ✏️ Replace with your actual WhatsApp number (country code + number, no + or spaces)
-const WHATSAPP_NUMBER = 'YOUR_WHATSAPP_NUMBER'
+const WHATSAPP_NUMBER = '9779814137314'
 
 type Product = 'T-shirt' | 'Hoodie' | 'Cup' | ''
 type Size = 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL' | 'One Size' | ''

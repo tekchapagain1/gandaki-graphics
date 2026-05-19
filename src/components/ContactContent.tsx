@@ -1,6 +1,6 @@
 'use client'
 
-const WHATSAPP_NUMBER = '977981-4137314'
+const WHATSAPP_NUMBER = '9779814137314'
 const WHATSAPP_MESSAGE = 'Hi Gandaki Graphics! I have a question about custom printing.'
 const EMAIL = 'gandakigraphicshome@gmail.com'
 const PHONE = '+977 981-4137314'

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const values = [
   {
@@ -149,9 +150,14 @@ export default function AboutContent() {
   <p className="section-label">The person behind it</p>
   <h2 className="section-title">Meet the owner</h2>
   <div className="flex items-center gap-6 card p-6 max-w-sm">
-    <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-      <span className="font-display text-lg font-medium text-blue-700">SP</span>
-    </div>
+
+<Image
+  src="/gallery/owner.png"
+  alt="Sujan Poudel"
+  width={96}
+  height={128}
+  className="border border-blue-100 object-cover rounded-2xl"
+/>
     <div>
       <p className="text-base font-medium">Sujan Poudel</p>
       <p className="text-sm font-light text-gray-400 mt-0.5">Founder & Owner, Gandaki Graphics</p>

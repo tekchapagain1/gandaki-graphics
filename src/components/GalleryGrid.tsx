@@ -2,19 +2,20 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 type Category = 'All' | 'T-shirts' | 'Hoodies' | 'Cups'
 
 const galleryItems = [
-  { id: 1, category: 'T-shirts', title: 'Graphic Tee — Bold Print', desc: 'Full-color front print', color: '#F1EFE8', accent: '#5F5E5A' },
-  { id: 2, category: 'Hoodies', title: 'Pullover Hoodie', desc: 'Chest logo + back design', color: '#E6F1FB', accent: '#185FA5' },
-  { id: 3, category: 'Cups',     title: 'Custom Mug — Wrap Print', desc: '360° wraparound design', color: '#E1F5EE', accent: '#0F6E56' },
-  { id: 4, category: 'T-shirts', title: 'Event Tee — Team Design', desc: 'Multi-color artwork', color: '#FAEEDA', accent: '#854F0B' },
-  { id: 5, category: 'T-shirts', title: 'Minimalist Pocket Tee', desc: 'Small chest print', color: '#FCEBEB', accent: '#A32D2D' },
-  { id: 6, category: 'Hoodies', title: 'Zip-up Hoodie', desc: 'Sleeve & back graphics', color: '#FBEAF0', accent: '#993556' },
-  { id: 7, category: 'Cups',    title: 'Gift Mug Set', desc: 'Custom name + pattern', color: '#EAF3DE', accent: '#3B6D11' },
-  { id: 8, category: 'T-shirts', title: 'Kids Tee — Cartoon Art', desc: 'Bright full-front print', color: '#E6F1FB', accent: '#185FA5' },
-  { id: 9, category: 'Hoodies', title: 'Oversized Hoodie', desc: 'Large back graphic', color: '#F1EFE8', accent: '#444441' },
+  { id: 1, category: 'T-shirts', title: 'Graphic Tee — Bold Print', desc: 'Full-color front print', color: '#F1EFE8', accent: '#5F5E5A', image: '/gallery/tshirt1.png' },
+  { id: 2, category: 'Hoodies', title: 'Pullover Hoodie', desc: 'Chest logo + back design', color: '#E6F1FB', accent: '#185FA5', image: '/gallery/hoodie1.png' },
+  { id: 3, category: 'Cups',     title: 'Custom Mug — Wrap Print', desc: '360° wraparound design', color: '#E1F5EE', accent: '#0F6E56', image: '/gallery/cup1.png' },
+  { id: 4, category: 'T-shirts', title: 'Event Tee — Team Design', desc: 'Multi-color artwork', color: '#FAEEDA', accent: '#854F0B', image: '/gallery/tshirt2.png' },
+  { id: 5, category: 'T-shirts', title: 'Minimalist Pocket Tee', desc: 'Small chest print', color: '#FCEBEB', accent: '#A32D2D', image: '/gallery/tshirt3.png' },
+  { id: 6, category: 'Hoodies', title: 'Zip-up Hoodie', desc: 'Sleeve & back graphics', color: '#FBEAF0', accent: '#993556', image: '/gallery/hoodie2.png' },
+  { id: 7, category: 'Cups',    title: 'Gift Mug Set', desc: 'Custom name + pattern', color: '#EAF3DE', accent: '#3B6D11', image: '/gallery/cup2.png' },
+  { id: 8, category: 'T-shirts', title: 'Kids Tee — Cartoon Art', desc: 'Bright full-front print', color: '#E6F1FB', accent: '#185FA5', image: '/gallery/tshirt4.png' },
+  { id: 9, category: 'Hoodies', title: 'Oversized Hoodie', desc: 'Large back graphic', color: '#F1EFE8', accent: '#444441', image: '/gallery/hoodie3.png' },
 ]
 
 // SVG placeholder illustrations per category
@@ -84,7 +85,7 @@ export default function GalleryGrid() {
           </Link>
         </div>
         <p className="text-sm font-light text-gray-400 mt-3 max-w-lg">
-          A sample of what we've made. Replace these placeholders with your real photos once you have them — drop images into <code className="text-xs bg-gray-100 px-1.5 py-0.5 rounded">public/gallery/</code>.
+          A sample of what we've made. From vibrant t-shirts to cozy hoodies and custom mugs — see how we bring designs to life with DTF printing.
         </p>
       </div>
 
@@ -113,13 +114,14 @@ export default function GalleryGrid() {
             className="group card overflow-hidden hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-pointer"
           >
             {/* Image area */}
-            <div className="aspect-square overflow-hidden">
-              <PlaceholderIllustration
-                category={item.category}
-                color={item.color}
-                accent={item.accent}
-              />
-            </div>
+<div className="aspect-square overflow-hidden relative">
+  <Image
+    src={item.image}
+    alt={item.title}
+    fill
+    className="object-cover"
+  />
+</div>
 
             {/* Caption */}
             <div className="p-4 border-t border-gray-100">
