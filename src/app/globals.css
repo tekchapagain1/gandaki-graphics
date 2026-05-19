@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-brand: #185FA5;
+  --color-brand-light: #E6F1FB;
+  --color-brand-dark: #0C447C;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@layer components {
+  .font-display {
+    font-family: 'Playfair Display', Georgia, serif;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-xs font-medium tracking-widest uppercase rounded-lg hover:bg-gray-700 transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 border border-gray-300 text-gray-900 text-xs font-medium tracking-widest uppercase rounded-lg hover:bg-gray-50 transition-colors duration-200;
+  }
+
+  .btn-blue {
+    @apply inline-flex items-center gap-2 px-5 py-2.5 text-xs font-medium tracking-wide rounded-lg transition-colors duration-200;
+    background-color: var(--color-brand);
+    color: var(--color-brand-light);
+  }
+
+  .btn-blue:hover {
+    background-color: var(--color-brand-dark);
+  }
+
+  .section-label {
+    @apply text-xs font-medium tracking-widest uppercase text-gray-400 mb-1;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    @apply text-3xl font-normal mb-10;
+  }
+
+  .card {
+    @apply bg-white border border-gray-100 rounded-xl;
+  }
+}

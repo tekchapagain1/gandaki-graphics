@@ -1,0 +1,6 @@
+node_modules/
+.next/
+readme.md
+DEPLOY.md
+.DS_Store
+*.log
