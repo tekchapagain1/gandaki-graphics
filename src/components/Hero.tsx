@@ -60,9 +60,9 @@ export default function Hero() {
             <Image
               src="/gallery/logo.png"
               alt="Featured product"
-              width={320}
-              height={240}
-              className="object-contain"
+              fill
+              loading="lazy"
+              className="object-contain p-4 md:p-8"
             />
           </div>
 

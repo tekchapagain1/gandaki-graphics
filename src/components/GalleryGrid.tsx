@@ -119,6 +119,7 @@ export default function GalleryGrid() {
     src={item.image}
     alt={item.title}
     fill
+    loading="lazy"
     className="object-cover"
   />
 </div>

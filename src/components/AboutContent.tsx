@@ -156,6 +156,7 @@ export default function AboutContent() {
   alt="Sujan Poudel"
   width={96}
   height={128}
+  loading="lazy"
   className="border border-blue-100 object-cover rounded-2xl"
 />
     <div>
