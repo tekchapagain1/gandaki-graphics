@@ -1,7 +1,7 @@
 const stats = [
-  { number: '100%', label: 'Custom artwork accepted' },
-  { number: 'Fast', label: 'Quick turnaround time' },
-  { number: '3+', label: 'Product categories' },
+  { number: '100k+', label: 'Products printed' },
+  { number: '5k+', label: 'Happy customers' },
+  { number: '99%', label: 'On-time delivery' },
 ]
 
 export default function Stats() {
