@@ -4,8 +4,8 @@ const WHATSAPP_NUMBER = '9779814137314'
 const WHATSAPP_MESSAGE = 'Hi Gandaki Graphics! I have a question about custom printing.'
 const EMAIL = 'gandakigraphicshome@gmail.com'
 const PHONE = '+977 981-4137314'
-const ADDRESS = 'Your Street, Pokhara, Gandaki Province, Nepal'
-const MAPS_URL = 'https://maps.google.com/?q=Pokhara,Gandaki,Nepal'
+const ADDRESS = '10 New Rd, Pokhara 33700'
+const MAPS_URL = 'https://maps.app.goo.gl/pUARbW21djEWtkKb6'
 
 const faqs = [
   {
