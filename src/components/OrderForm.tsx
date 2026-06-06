@@ -55,6 +55,7 @@ export default function OrderForm() {
   const [error, setError] = useState<string | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
   const [submitAttempted, setSubmitAttempted] = useState(false)
+  const [orderCode, setOrderCode] = useState<string | null>(null)
 
   function update(field: keyof Omit<FormData, 'designFile'>, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -117,6 +118,7 @@ export default function OrderForm() {
       const data = await response.json()
       console.log('Order saved:', data.orderId)
 
+      setOrderCode(data.orderCode || null)
       setSubmitted(true)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An error occurred'
@@ -149,6 +151,20 @@ export default function OrderForm() {
         <p className="text-sm font-light text-gray-400 mb-8 max-w-md mx-auto">
           Thank you for your order. We&apos;ve received your details and will contact you soon via the phone number you provided to confirm and discuss your design.
         </p>
+
+        <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 mb-8">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Order ID</span>
+          <span className="font-mono text-sm font-semibold text-gray-900">{orderCode || '—'}</span>
+          <button
+            type="button"
+            onClick={() => {
+              if (orderCode) navigator.clipboard?.writeText(orderCode)
+            }}
+            className="text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors"
+          >
+            Copy
+          </button>
+        </div>
 
         <div className="bg-gray-50 rounded-lg p-6 mb-8 text-left max-w-sm mx-auto">
           <h3 className="font-medium text-gray-900 mb-4">Order Summary</h3>
@@ -194,7 +210,10 @@ export default function OrderForm() {
 
         <div className="flex gap-3 justify-center flex-wrap">
           <button
-            onClick={() => setSubmitted(false)}
+            onClick={() => {
+              setSubmitted(false)
+              setOrderCode(null)
+            }}
             className="btn-outline"
           >
             Place another order

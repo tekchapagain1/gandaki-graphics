@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { promises as fs } from 'fs'
+import { randomBytes } from 'crypto'
 import path from 'path'
 import { prisma } from '@/lib/prisma'
 import { sendOrderConfirmation } from '@/lib/email'
@@ -35,6 +36,10 @@ const ALLOWED_DESIGN_FILE_TYPES = new Set([
 function sanitizeFilename(filename: string) {
   const baseName = filename.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/-+/g, '-')
   return baseName.replace(/^-+|-+$/g, '') || 'design-file'
+}
+
+function generateOrderCode() {
+  return `GG-${randomBytes(3).toString('hex').toUpperCase()}`
 }
 
 export async function POST(request: NextRequest) {
@@ -153,6 +158,27 @@ export async function POST(request: NextRequest) {
 
     let designFileName: string | null = null
     let designFilePath: string | null = null
+    let orderCode: string | null = null
+
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const candidate = generateOrderCode()
+      const existing = await prisma.order.findUnique({
+        where: { orderCode: candidate },
+        select: { id: true },
+      })
+
+      if (!existing) {
+        orderCode = candidate
+        break
+      }
+    }
+
+    if (!orderCode) {
+      return NextResponse.json(
+        { error: 'Failed to generate order code. Please try again.' },
+        { status: 500 }
+      )
+    }
 
     if (uploadedDesignFile) {
       if (uploadedDesignFile.size > MAX_DESIGN_FILE_SIZE) {
@@ -185,7 +211,9 @@ export async function POST(request: NextRequest) {
     // 5. Create order
     const order = await prisma.order.create({
       data: {
+        orderCode,
         name: body.name,
+        email: body.email,
         phone: body.phone,
         product: body.product,
         size: body.size || null,
@@ -204,7 +232,7 @@ export async function POST(request: NextRequest) {
       customerName: body.name,
       customerEmail: body.email,
       customerPhone: body.phone,
-      orderId: order.id.toString(),
+      orderId: orderCode,
       product: body.product,
       quantity: body.quantity,
       details: body.designNotes || `Size: ${body.size || 'N/A'}, Color: ${body.color || 'N/A'}`,
@@ -213,10 +241,10 @@ export async function POST(request: NextRequest) {
       designFileUrl: designFilePath || undefined,
     })
 
-    console.log(`✅ Order #${order.id} created successfully from ${clientIP}`)
+    console.log(`✅ Order ${orderCode} (#${order.id}) created successfully from ${clientIP}`)
 
     return NextResponse.json(
-      { success: true, orderId: order.id },
+      { success: true, orderId: order.id, orderCode },
       { status: 201 }
     )
   } catch (error) {

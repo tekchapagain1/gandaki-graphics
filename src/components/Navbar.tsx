@@ -25,6 +25,7 @@ export default function Navbar() {
           <Link href="/#services" className="hover:text-gray-900 transition-colors">Services</Link>
           <Link href="/gallery" className="hover:text-gray-900 transition-colors">Gallery</Link>
           <Link href="/pricing" className="hover:text-gray-900 transition-colors">Pricing</Link>
+          <Link href="/track" className="hover:text-gray-900 transition-colors">Track order</Link>
           <Link href="/about" className="hover:text-gray-900 transition-colors">About</Link>
           <Link href="/contact" className="hover:text-gray-900 transition-colors">Contact</Link>
         </div>
@@ -54,6 +55,7 @@ export default function Navbar() {
           <Link href="/#services" onClick={() => setMobileOpen(false)} className="hover:text-gray-900">Services</Link>
           <Link href="/gallery" onClick={() => setMobileOpen(false)} className="hover:text-gray-900">Gallery</Link>
           <Link href="/pricing" onClick={() => setMobileOpen(false)} className="hover:text-gray-900">Pricing</Link>
+          <Link href="/track" onClick={() => setMobileOpen(false)} className="hover:text-gray-900">Track order</Link>
           <Link href="/about" onClick={() => setMobileOpen(false)} className="hover:text-gray-900">About</Link>
           <Link href="/contact" onClick={() => setMobileOpen(false)} className="hover:text-gray-900">Contact</Link>
           <Link href="/order" onClick={() => setMobileOpen(false)} className="btn-primary w-fit">

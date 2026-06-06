@@ -5,6 +5,7 @@ import { formatDistanceToNow } from 'date-fns'
 
 interface Order {
   id: number
+  orderCode?: string | null
   name: string
   phone?: string
   product: string
@@ -327,6 +328,7 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
                       <th className="text-left px-6 py-3 font-medium text-gray-700">Name</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-700">Order ID</th>
                       <th className="text-left px-6 py-3 font-medium text-gray-700">Product</th>
                       <th className="text-left px-6 py-3 font-medium text-gray-700">Qty</th>
                       <th className="text-left px-6 py-3 font-medium text-gray-700">Status</th>
@@ -337,15 +339,20 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
                   <tbody className="divide-y divide-gray-200">
                     {orders.map((order) => (
                       <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div>
-                            <p className="font-medium text-gray-900">{order.name}</p>
-                            <p className="text-xs text-gray-500">{order.phone || 'N/A'}</p>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div>
-                            <p className="text-gray-900">{order.product}</p>
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-medium text-gray-900">{order.name}</p>
+                        <p className="text-xs text-gray-500">{order.phone || 'N/A'}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 font-mono">
+                        {order.orderCode || `ORD-${order.id}`}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="text-gray-900">{order.product}</p>
                             {order.size && <p className="text-xs text-gray-500">{order.size}</p>}
                             {order.designFileName && order.designFilePath ? (
                               <a
