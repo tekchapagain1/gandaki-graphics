@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getSession } from '@/lib/auth'
 import { getSuspiciousActivityLog } from '@/lib/security'
 
+export const dynamic = 'force-dynamic'
+
 /**
  * Admin endpoint to view suspicious activity logs
  * Requires authentication

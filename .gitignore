@@ -6,3 +6,4 @@ DEPLOY.md
 *.log
 /src/generated/prisma
 .env
+.env.local
