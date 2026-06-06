@@ -11,6 +11,7 @@ type TimelineStep = {
 
 type TrackingOrder = {
   id: number
+  orderCode?: string | null
   name: string
   email?: string | null
   phone?: string | null
@@ -27,7 +28,7 @@ type TrackingOrder = {
 }
 
 export default function OrderTracking() {
-  const [orderId, setOrderId] = useState('')
+  const [orderRef, setOrderRef] = useState('')
   const [emailOrPhone, setEmailOrPhone] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -45,7 +46,7 @@ export default function OrderTracking() {
       const response = await fetch('/api/orders/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId, emailOrPhone }),
+        body: JSON.stringify({ orderRef, emailOrPhone }),
       })
 
       const data = await response.json()
@@ -75,12 +76,13 @@ export default function OrderTracking() {
             where it stands.
           </h1>
           <p className="text-sm font-light text-gray-500 max-w-lg mb-8 leading-relaxed">
-            Enter your order ID and the phone number or email you used at checkout. We&apos;ll show you the current status, summary, and next step.
+            Enter your order code and the phone number or email you used at checkout. We&apos;ll show you the current status, summary, and next step.
           </p>
 
-          <div className="grid sm:grid-cols-3 gap-3">
+          <div className="grid sm:grid-cols-2 gap-3">
             {[
-              { title: 'Safe lookup', text: 'Need both order ID and contact detail.' },
+              { title: 'Order code', text: 'Use the code from your confirmation message.' },
+              { title: 'Contact match', text: 'Pair it with the phone or email you used.' },
               { title: 'Live status', text: 'See pending, confirmed, or completed.' },
               { title: 'Order summary', text: 'Review item, quantity, and deadline.' },
             ].map((item) => (
@@ -96,14 +98,13 @@ export default function OrderTracking() {
           <form onSubmit={handleTrack} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">
-                Order ID
+                Order code
               </label>
               <input
-                type="number"
-                min="1"
-                value={orderId}
-                onChange={(e) => setOrderId(e.target.value)}
-                placeholder="e.g. 123"
+                type="text"
+                value={orderRef}
+                onChange={(e) => setOrderRef(e.target.value.toUpperCase())}
+                placeholder="e.g. GG-1A2B3C"
                 className="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-sm font-light text-gray-900 placeholder-gray-300 focus:outline-none focus:border-gray-400 transition-colors"
                 required
               />
@@ -125,7 +126,7 @@ export default function OrderTracking() {
 
             <button
               type="submit"
-              disabled={loading || !orderId || !emailOrPhone}
+              disabled={loading || !orderRef || !emailOrPhone}
               className="w-full btn-primary justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Checking status...' : 'Track order'}
@@ -141,7 +142,7 @@ export default function OrderTracking() {
           {!error && !order && (
             <div className="mt-5 rounded-xl bg-gray-50 border border-gray-100 p-4">
               <p className="text-xs text-gray-500 leading-relaxed">
-                Tip: You can find your order ID in the confirmation message after placing your order.
+                Tip: You can find your order code in the confirmation message after placing your order.
               </p>
             </div>
           )}
@@ -169,7 +170,7 @@ export default function OrderTracking() {
                             : 'bg-red-100 text-red-700'
                     }`}
                   >
-                    Order #{order.id}
+                    {order.orderCode || `ORD-${order.id}`}
                   </span>
                 </div>
                 <p className="text-sm text-gray-500 mt-3">

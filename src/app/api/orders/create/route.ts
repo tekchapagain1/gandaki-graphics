@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { promises as fs } from 'fs'
-import { randomBytes } from 'crypto'
+import { randomBytes, randomInt } from 'crypto'
 import path from 'path'
 import { prisma } from '@/lib/prisma'
 import { sendOrderConfirmation } from '@/lib/email'
@@ -32,14 +32,23 @@ const ALLOWED_DESIGN_FILE_TYPES = new Set([
   'application/vnd.adobe.photoshop',
   'application/octet-stream',
 ])
+const ORDER_CODE_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 function sanitizeFilename(filename: string) {
   const baseName = filename.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/-+/g, '-')
   return baseName.replace(/^-+|-+$/g, '') || 'design-file'
 }
 
+function randomLetters(length: number) {
+  return Array.from(randomBytes(length), (value) => ORDER_CODE_LETTERS[value % ORDER_CODE_LETTERS.length]).join('')
+}
+
 function generateOrderCode() {
-  return `GG-${randomBytes(3).toString('hex').toUpperCase()}`
+  const letters = randomLetters(2)
+  const digits = Array.from({ length: 4 }, () => randomInt(0, 10)).join('')
+  const suffix = randomLetters(2)
+
+  return `GG-${letters}${digits}${suffix}`
 }
 
 export async function POST(request: NextRequest) {

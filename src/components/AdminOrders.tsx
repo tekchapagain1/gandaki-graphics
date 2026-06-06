@@ -185,6 +185,141 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
             <div className="text-xs font-medium uppercase tracking-wider text-gray-400">
               {orders.length} shown
             </div>
+          </div>
+
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setStatusFilter(null)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                statusFilter === null
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              All ({orders.length})
+            </button>
+            {statuses.map((status) => {
+              const count = orders.filter((o) => o.status === status).length
+              return (
+                <button
+                  key={status}
+                  onClick={() => setStatusFilter(status)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
+                    statusFilter === status
+                      ? `${STATUS_COLORS[status].badge}`
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {status} ({count})
+                </button>
+              )
+            })}
+          </div>
+
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">Loading orders...</p>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          ) : orders.length === 0 ? (
+            <div className="text-center py-12 border border-gray-200 rounded-lg bg-gray-50">
+              <p className="text-gray-500">No orders {statusFilter ? `with status "${statusFilter}"` : 'yet'}</p>
+            </div>
+          ) : (
+            <div className="border border-gray-200 rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b border-gray-200">
+                    <tr>
+                      <th className="text-left px-6 py-3 font-medium text-gray-700">Name</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-700">Order code</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-700">Product</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-700">Qty</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-700">Status</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-700">Ordered</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-700">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {orders.map((order) => (
+                      <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="font-medium text-gray-900">{order.name}</p>
+                            <p className="text-xs text-gray-500">{order.phone || 'N/A'}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-1">
+                            <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 font-mono">
+                              {order.orderCode || `ORD-${order.id}`}
+                            </span>
+                            <span className="text-[11px] text-gray-400">Database #{order.id}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="text-gray-900">{order.product}</p>
+                            {order.size && <p className="text-xs text-gray-500">{order.size}</p>}
+                            {order.designFileName && order.designFilePath ? (
+                              <a
+                                href={order.designFilePath}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-blue-600 mt-1 inline-block hover:underline"
+                              >
+                                File: {order.designFileName}
+                              </a>
+                            ) : order.designFileName ? (
+                              <p className="text-xs text-blue-600 mt-1 truncate">
+                                File: {order.designFileName}
+                              </p>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-gray-900">{order.quantity}</td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[order.status].badge}`}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-xs text-gray-500">
+                          {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <select
+                              value={order.status}
+                              onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                              disabled={updatingId === order.id || deletingId === order.id}
+                              className="text-xs border border-gray-200 rounded px-2 py-1 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {statuses.map((s) => (
+                                <option key={s} value={s} className="capitalize">
+                                  {s}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={() => deleteOrder(order.id)}
+                              disabled={deletingId === order.id}
+                              className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md border border-red-200 text-red-700 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {deletingId === order.id ? 'Deleting...' : 'Delete'}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6 md:p-8">
@@ -276,140 +411,6 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
             })}
           </div>
         )}
-      </div>
-
-      {/* Filter tabs */}
-          <div className="flex gap-2 flex-wrap">
-            <button
-              onClick={() => setStatusFilter(null)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                statusFilter === null
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              All ({orders.length})
-            </button>
-            {statuses.map((status) => {
-              const count = orders.filter((o) => o.status === status).length
-              return (
-                <button
-                  key={status}
-                  onClick={() => setStatusFilter(status)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${
-                    statusFilter === status
-                      ? `${STATUS_COLORS[status].badge}`
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {status} ({count})
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Orders table */}
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">Loading orders...</p>
-            </div>
-          ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          ) : orders.length === 0 ? (
-            <div className="text-center py-12 border border-gray-200 rounded-lg bg-gray-50">
-              <p className="text-gray-500">No orders {statusFilter ? `with status "${statusFilter}"` : 'yet'}</p>
-            </div>
-          ) : (
-            <div className="border border-gray-200 rounded-xl overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 border-b border-gray-200">
-                    <tr>
-                      <th className="text-left px-6 py-3 font-medium text-gray-700">Name</th>
-                      <th className="text-left px-6 py-3 font-medium text-gray-700">Order ID</th>
-                      <th className="text-left px-6 py-3 font-medium text-gray-700">Product</th>
-                      <th className="text-left px-6 py-3 font-medium text-gray-700">Qty</th>
-                      <th className="text-left px-6 py-3 font-medium text-gray-700">Status</th>
-                      <th className="text-left px-6 py-3 font-medium text-gray-700">Ordered</th>
-                      <th className="text-left px-6 py-3 font-medium text-gray-700">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {orders.map((order) => (
-                      <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="font-medium text-gray-900">{order.name}</p>
-                        <p className="text-xs text-gray-500">{order.phone || 'N/A'}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 font-mono">
-                        {order.orderCode || `ORD-${order.id}`}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div>
-                        <p className="text-gray-900">{order.product}</p>
-                            {order.size && <p className="text-xs text-gray-500">{order.size}</p>}
-                            {order.designFileName && order.designFilePath ? (
-                              <a
-                                href={order.designFilePath}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-blue-600 mt-1 inline-block hover:underline"
-                              >
-                                File: {order.designFileName}
-                              </a>
-                            ) : order.designFileName ? (
-                              <p className="text-xs text-blue-600 mt-1 truncate">
-                                File: {order.designFileName}
-                              </p>
-                            ) : null}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-gray-900">{order.quantity}</td>
-                        <td className="px-6 py-4">
-                          <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[order.status].badge}`}>
-                            {order.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-xs text-gray-500">
-                          {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <select
-                              value={order.status}
-                              onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                              disabled={updatingId === order.id || deletingId === order.id}
-                              className="text-xs border border-gray-200 rounded px-2 py-1 bg-white disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {statuses.map((s) => (
-                                <option key={s} value={s} className="capitalize">
-                                  {s}
-                                </option>
-                              ))}
-                            </select>
-                            <button
-                              onClick={() => deleteOrder(order.id)}
-                              disabled={deletingId === order.id}
-                              className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-md border border-red-200 text-red-700 hover:bg-red-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {deletingId === order.id ? 'Deleting...' : 'Delete'}
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   )

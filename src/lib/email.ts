@@ -1,16 +1,3 @@
-import sgMail from '@sendgrid/mail'
-
-// Initialize SendGrid with API key from environment
-const initializeSendGrid = () => {
-  const apiKey = process.env.SENDGRID_API_KEY
-  if (!apiKey) {
-    console.warn('⚠️  SendGrid API key not configured. Email notifications disabled.')
-    return null
-  }
-  sgMail.setApiKey(apiKey)
-  return sgMail
-}
-
 interface OrderEmailData {
   customerName: string
   customerEmail: string
@@ -24,15 +11,85 @@ interface OrderEmailData {
   designFileUrl?: string
 }
 
+const RESEND_API_URL = 'https://api.resend.com/emails'
+
+function getResendConfig() {
+  const apiKey = process.env.RESEND_API_KEY
+  const fromEmail = process.env.RESEND_FROM_EMAIL
+
+  if (!apiKey || !fromEmail) {
+    console.warn('⚠️  Resend is not configured. Email notifications disabled.')
+    return null
+  }
+
+  return { apiKey, fromEmail }
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+async function sendResendEmail({
+  apiKey,
+  fromEmail,
+  to,
+  subject,
+  html,
+}: {
+  apiKey: string
+  fromEmail: string
+  to: string
+  subject: string
+  html: string
+}) {
+  const response = await fetch(RESEND_API_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to,
+      subject,
+      html,
+    }),
+  })
+
+  if (!response.ok) {
+    const details = await response.text()
+    throw new Error(`Resend request failed (${response.status}): ${details}`)
+  }
+
+  return response.json()
+}
+
 export async function sendOrderConfirmation(data: OrderEmailData) {
   try {
-    const client = initializeSendGrid()
-    if (!client) {
+    const config = getResendConfig()
+    if (!config) {
       console.log('📧 Email service not configured. Skipping notification.')
       return { success: false, reason: 'Email service not configured' }
     }
 
-    const customerEmail = `
+    const safeCustomerName = escapeHtml(data.customerName)
+    const safeOrderId = escapeHtml(data.orderId)
+    const safeProduct = escapeHtml(data.product)
+    const safeQuantity = escapeHtml(data.quantity)
+    const safeDetails = escapeHtml(data.details || 'N/A')
+    const safePhone = escapeHtml(data.customerPhone)
+    const safeEmail = escapeHtml(data.customerEmail)
+    const safeTurnaround = escapeHtml(data.estimatedTurnaround)
+    const safeDesignFileName = data.designFileName ? escapeHtml(data.designFileName) : null
+    const safeDesignFileUrl = data.designFileUrl ? escapeHtml(data.designFileUrl) : null
+    const adminEmailAddress = process.env.ADMIN_EMAIL || process.env.RESEND_TO_EMAIL || data.customerEmail
+
+    const customerEmailHtml = `
       <html>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333;">
           <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto;">
@@ -47,23 +104,27 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
             <tr>
               <td style="background: #f9fafb; border-radius: 8px; padding: 24px;">
                 <p style="color: #666; margin: 0 0 16px;">
-                  <strong>Order ID:</strong> <span style="font-family: monospace; color: #185fa5;">#${data.orderId}</span>
+                  <strong>Order code:</strong> <span style="font-family: monospace; color: #185fa5;">${safeOrderId}</span>
                 </p>
                 <p style="color: #666; margin: 0 0 16px;">
-                  <strong>Product:</strong> ${data.product} (Qty: ${data.quantity})
+                  <strong>Product:</strong> ${safeProduct} (Qty: ${safeQuantity})
                 </p>
                 <p style="color: #666; margin: 0 0 16px;">
-                  <strong>Details:</strong> ${data.details || 'N/A'}
+                  <strong>Details:</strong> ${safeDetails}
                 </p>
                 ${
-                  data.designFileName
+                  safeDesignFileName
                     ? `<p style="color: #666; margin: 0 0 16px;">
-                        <strong>Design file:</strong> ${data.designFileName}
+                        <strong>Design file:</strong> ${
+                          safeDesignFileUrl
+                            ? `<a href="${safeDesignFileUrl}" style="color: #185fa5;">${safeDesignFileName}</a>`
+                            : safeDesignFileName
+                        }
                       </p>`
                     : ''
                 }
                 <p style="color: #666; margin: 0;">
-                  <strong>Expected Turnaround:</strong> ${data.estimatedTurnaround}
+                  <strong>Expected Turnaround:</strong> ${safeTurnaround}
                 </p>
               </td>
             </tr>
@@ -73,7 +134,7 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
                 <ol style="color: #666; margin: 0; padding-left: 20px;">
                   <li style="margin-bottom: 10px;">We'll review your order details</li>
                   <li style="margin-bottom: 10px;">
-                    <strong>We'll call you within 2-4 hours</strong> at <strong>${data.customerPhone}</strong> to confirm design, colors, and specifications
+                    <strong>We'll call you within 2-4 hours</strong> at <strong>${safePhone}</strong> to confirm design, colors, and specifications
                   </li>
                   <li style="margin-bottom: 10px;">Once confirmed, we'll start printing</li>
                   <li style="margin-bottom: 10px;">Quality check and preparation for pickup</li>
@@ -105,7 +166,7 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
       </html>
     `
 
-    const adminEmail = `
+    const adminEmailHtml = `
       <html>
         <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; color: #333;">
           <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto;">
@@ -118,39 +179,43 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
               <td style="background: #f9fafb; padding: 24px; border-radius: 0 0 8px 8px;">
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td style="padding: 10px 0;"><strong style="color: #666;">Order ID:</strong></td>
-                    <td style="text-align: right; padding: 10px 0;"><span style="font-family: monospace; background: #185fa5; color: white; padding: 4px 8px; border-radius: 4px;">#${data.orderId}</span></td>
+                    <td style="padding: 10px 0;"><strong style="color: #666;">Order code:</strong></td>
+                    <td style="text-align: right; padding: 10px 0;"><span style="font-family: monospace; background: #185fa5; color: white; padding: 4px 8px; border-radius: 4px;">${safeOrderId}</span></td>
                   </tr>
                   <tr>
                     <td style="padding: 10px 0;"><strong style="color: #666;">Customer:</strong></td>
-                    <td style="text-align: right; padding: 10px 0;">${data.customerName}</td>
+                    <td style="text-align: right; padding: 10px 0;">${safeCustomerName}</td>
                   </tr>
                   <tr>
                     <td style="padding: 10px 0;"><strong style="color: #666;">Phone:</strong></td>
-                    <td style="text-align: right; padding: 10px 0;"><a href="tel:${data.customerPhone}" style="color: #185fa5;">${data.customerPhone}</a></td>
+                    <td style="text-align: right; padding: 10px 0;"><a href="tel:${safePhone}" style="color: #185fa5;">${safePhone}</a></td>
                   </tr>
                   <tr>
                     <td style="padding: 10px 0;"><strong style="color: #666;">Email:</strong></td>
-                    <td style="text-align: right; padding: 10px 0;"><a href="mailto:${data.customerEmail}" style="color: #185fa5;">${data.customerEmail}</a></td>
+                    <td style="text-align: right; padding: 10px 0;"><a href="mailto:${safeEmail}" style="color: #185fa5;">${safeEmail}</a></td>
                   </tr>
                   <tr style="border-top: 1px solid #e5e7eb;">
                     <td style="padding: 10px 0;"><strong style="color: #666;">Product:</strong></td>
-                    <td style="text-align: right; padding: 10px 0;">${data.product}</td>
+                    <td style="text-align: right; padding: 10px 0;">${safeProduct}</td>
                   </tr>
                   <tr>
                     <td style="padding: 10px 0;"><strong style="color: #666;">Quantity:</strong></td>
-                    <td style="text-align: right; padding: 10px 0;">${data.quantity}</td>
+                    <td style="text-align: right; padding: 10px 0;">${safeQuantity}</td>
                   </tr>
                   <tr>
                     <td style="padding: 10px 0;"><strong style="color: #666;">Details:</strong></td>
-                    <td style="text-align: right; padding: 10px 0;">${data.details || 'N/A'}</td>
+                    <td style="text-align: right; padding: 10px 0;">${safeDetails}</td>
                   </tr>
                   ${
-                    data.designFileName
+                    safeDesignFileName
                       ? `<tr>
                           <td style="padding: 10px 0;"><strong style="color: #666;">Design file:</strong></td>
                           <td style="text-align: right; padding: 10px 0;">
-                            ${data.designFileUrl ? `<a href="${data.designFileUrl}" style="color: #185fa5;">${data.designFileName}</a>` : data.designFileName}
+                            ${
+                              safeDesignFileUrl
+                                ? `<a href="${safeDesignFileUrl}" style="color: #185fa5;">${safeDesignFileName}</a>`
+                                : safeDesignFileName
+                            }
                           </td>
                         </tr>`
                       : ''
@@ -168,26 +233,25 @@ export async function sendOrderConfirmation(data: OrderEmailData) {
       </html>
     `
 
-    // Send to customer
-    await client.send({
+    await sendResendEmail({
+      apiKey: config.apiKey,
+      fromEmail: config.fromEmail,
       to: data.customerEmail,
-      from: process.env.SENDGRID_FROM_EMAIL || 'gandakigraphicshome@gmail.com',
-      subject: `Order Received! Your Order #${data.orderId}`,
-      html: customerEmail,
+      subject: `Order Received! Your Order Code ${data.orderId}`,
+      html: customerEmailHtml,
     })
 
-    // Send to admin
-    const adminEmailAddress = process.env.ADMIN_EMAIL || 'gandakigraphicshome@gmail.com'
     if (adminEmailAddress) {
-      await client.send({
+      await sendResendEmail({
+        apiKey: config.apiKey,
+        fromEmail: config.fromEmail,
         to: adminEmailAddress,
-        from: process.env.SENDGRID_FROM_EMAIL || 'gandakigraphicshome@gmail.com',
-        subject: `📋 New Order #${data.orderId} from ${data.customerName}`,
-        html: adminEmail,
+        subject: `New Order ${data.orderId} from ${data.customerName}`,
+        html: adminEmailHtml,
       })
     }
 
-    console.log(`✅ Order confirmation emails sent for order #${data.orderId}`)
+    console.log(`✅ Order confirmation emails sent for order ${data.orderId}`)
     return { success: true, orderId: data.orderId }
   } catch (error) {
     console.error('❌ Error sending order confirmation email:', error)

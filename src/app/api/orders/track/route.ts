@@ -10,7 +10,7 @@ const trackingRateLimiter = createRateLimiter({
 })
 
 type TrackingLookup = {
-  orderId?: string
+  orderRef?: string
   emailOrPhone?: string
 }
 
@@ -41,18 +41,23 @@ export async function POST(request: NextRequest) {
     }
 
     const body = (await request.json()) as TrackingLookup
-    const orderId = Number(body.orderId)
+    const orderRef = (body.orderRef || '').trim()
     const emailOrPhone = (body.emailOrPhone || '').trim()
 
-    if (!orderId || !emailOrPhone) {
+    if (!orderRef || !emailOrPhone) {
       return NextResponse.json(
-        { error: 'Order ID and email or phone are required.' },
+        { error: 'Order code and email or phone are required.' },
         { status: 400 }
       )
     }
 
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
+    const order = await prisma.order.findFirst({
+      where: {
+        OR: [
+          { orderCode: orderRef },
+          ...(Number.isFinite(Number(orderRef)) ? [{ id: Number(orderRef) }] : []),
+        ],
+      },
     })
 
     if (!order) {
@@ -78,6 +83,7 @@ export async function POST(request: NextRequest) {
       success: true,
       order: {
         id: order.id,
+        orderCode: order.orderCode,
         name: order.name,
         email: order.email,
         phone: order.phone,

@@ -153,7 +153,7 @@ export default function OrderForm() {
         </p>
 
         <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 mb-8">
-          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Order ID</span>
+          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Order code</span>
           <span className="font-mono text-sm font-semibold text-gray-900">{orderCode || '—'}</span>
           <button
             type="button"
