@@ -5,7 +5,7 @@ import OrderForm from '@/components/OrderForm'
 
 export const metadata: Metadata = {
   title: 'Place an Order — Gandaki Graphics',
-  description: 'Submit your custom print order — t-shirts, hoodies, or cups. Send your design via WhatsApp and we\'ll get back to you fast.',
+  description: 'Submit your custom print order — t-shirts, hoodies, or cups. Upload your design file or add notes and we\'ll confirm your order quickly.',
 }
 
 export default function OrderPage() {

@@ -7,15 +7,15 @@ import Image from 'next/image'
 type Category = 'All' | 'T-shirts' | 'Hoodies' | 'Cups'
 
 const galleryItems = [
-  { id: 1, category: 'T-shirts', title: 'Graphic Tee — Bold Print', desc: 'Full-color front print', color: '#F1EFE8', accent: '#5F5E5A', image: '/gallery/tshirt1.png' },
-  { id: 2, category: 'Hoodies', title: 'Pullover Hoodie', desc: 'Chest logo + back design', color: '#E6F1FB', accent: '#185FA5', image: '/gallery/hoodie1.png' },
-  { id: 3, category: 'Cups',     title: 'Custom Mug — Wrap Print', desc: '360° wraparound design', color: '#E1F5EE', accent: '#0F6E56', image: '/gallery/cup1.png' },
-  { id: 4, category: 'T-shirts', title: 'Event Tee — Team Design', desc: 'Multi-color artwork', color: '#FAEEDA', accent: '#854F0B', image: '/gallery/tshirt2.png' },
-  { id: 5, category: 'T-shirts', title: 'Minimalist Pocket Tee', desc: 'Small chest print', color: '#FCEBEB', accent: '#A32D2D', image: '/gallery/tshirt3.png' },
-  { id: 6, category: 'Hoodies', title: 'Zip-up Hoodie', desc: 'Sleeve & back graphics', color: '#FBEAF0', accent: '#993556', image: '/gallery/hoodie2.png' },
-  { id: 7, category: 'Cups',    title: 'Gift Mug Set', desc: 'Custom name + pattern', color: '#EAF3DE', accent: '#3B6D11', image: '/gallery/cup2.png' },
-  { id: 8, category: 'T-shirts', title: 'Kids Tee — Cartoon Art', desc: 'Bright full-front print', color: '#E6F1FB', accent: '#185FA5', image: '/gallery/tshirt4.png' },
-  { id: 9, category: 'Hoodies', title: 'Oversized Hoodie', desc: 'Large back graphic', color: '#F1EFE8', accent: '#444441', image: '/gallery/hoodie3.png' },
+  { id: 1, category: 'T-shirts', title: 'Graphic Tee — Bold Print', desc: 'Full-color front print', color: '#F1EFE8', accent: '#5F5E5A', image: '/gallery/tshirt1.png', rating: 5, customer: 'Sarah M.', review: 'The colors came out exactly how we wanted.' },
+  { id: 2, category: 'Hoodies', title: 'Pullover Hoodie', desc: 'Chest logo + back design', color: '#E6F1FB', accent: '#185FA5', image: '/gallery/hoodie1.png', rating: 5, customer: 'Aarav K.', review: 'Soft fabric, clean print, and fast delivery.' },
+  { id: 3, category: 'Cups',     title: 'Custom Mug — Wrap Print', desc: '360° wraparound design', color: '#E1F5EE', accent: '#0F6E56', image: '/gallery/cup1.png', rating: 5, customer: 'Mina T.', review: 'A perfect gift. The mug print looks premium.' },
+  { id: 4, category: 'T-shirts', title: 'Event Tee — Team Design', desc: 'Multi-color artwork', color: '#FAEEDA', accent: '#854F0B', image: '/gallery/tshirt2.png', rating: 5, customer: 'Rita P.', review: 'Our event shirts arrived right on time.' },
+  { id: 5, category: 'T-shirts', title: 'Minimalist Pocket Tee', desc: 'Small chest print', color: '#FCEBEB', accent: '#A32D2D', image: '/gallery/tshirt3.png', rating: 5, customer: 'Anil S.', review: 'Small details were sharp and durable.' },
+  { id: 6, category: 'Hoodies', title: 'Zip-up Hoodie', desc: 'Sleeve & back graphics', color: '#FBEAF0', accent: '#993556', image: '/gallery/hoodie2.png', rating: 5, customer: 'Nisha B.', review: 'Great embroidery look without the embroidery price.' },
+  { id: 7, category: 'Cups',    title: 'Gift Mug Set', desc: 'Custom name + pattern', color: '#EAF3DE', accent: '#3B6D11', image: '/gallery/cup2.png', rating: 5, customer: 'Dev P.', review: 'The gift set was a hit with our team.' },
+  { id: 8, category: 'T-shirts', title: 'Kids Tee — Cartoon Art', desc: 'Bright full-front print', color: '#E6F1FB', accent: '#185FA5', image: '/gallery/tshirt4.png', rating: 5, customer: 'Priya S.', review: 'Bright, playful, and really well made.' },
+  { id: 9, category: 'Hoodies', title: 'Oversized Hoodie', desc: 'Large back graphic', color: '#F1EFE8', accent: '#444441', image: '/gallery/hoodie3.png', rating: 5, customer: 'Kiran G.', review: 'The oversized fit looked exactly as expected.' },
 ]
 
 // SVG placeholder illustrations per category
@@ -80,9 +80,6 @@ export default function GalleryGrid() {
         <p className="section-label">Our work</p>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <h1 className="font-display text-4xl font-normal">Gallery</h1>
-          <Link href="/order" className="btn-primary w-fit">
-            Order a print →
-          </Link>
         </div>
         <p className="text-sm font-light text-gray-400 mt-3 max-w-lg">
           A sample of what we've made. From vibrant t-shirts to cozy hoodies and custom mugs — see how we bring designs to life with DTF printing.
@@ -130,6 +127,14 @@ export default function GalleryGrid() {
                 <div>
                   <p className="text-sm font-medium leading-snug">{item.title}</p>
                   <p className="text-xs font-light text-gray-400 mt-0.5">{item.desc}</p>
+                  <div className="flex items-center gap-1 mt-2">
+                    {Array.from({ length: item.rating }).map((_, idx) => (
+                      <span key={idx} className="text-[10px]">⭐</span>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-gray-500 mt-1">
+                    By {item.customer} · “{item.review}”
+                  </p>
                 </div>
                 <span
                   className="shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full mt-0.5"

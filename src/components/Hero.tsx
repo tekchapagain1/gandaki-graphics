@@ -27,11 +27,26 @@ export default function Hero() {
 
         <div className="flex flex-wrap gap-3">
           <Link href="/order" className="btn-primary">
-            Order now →
+            Start your order →
           </Link>
           <Link href="/gallery" className="btn-outline">
             View gallery
           </Link>
+        </div>
+
+        <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-medium text-gray-500">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
+            <span className="text-green-500">✓</span>
+            500+ happy customers
+          </span>
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
+            <span className="text-green-500">✓</span>
+            2-3 day turnaround
+          </span>
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
+            <span className="text-green-500">✓</span>
+            Quality guaranteed
+          </span>
         </div>
       </div>
 

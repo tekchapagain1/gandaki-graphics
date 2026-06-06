@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Order {
+  id        Int     @id @default(autoincrement())
+  name      String
+  phone     String?
+  product   String  // T-shirt, Hoodie, Cup
+  size      String? // XS, S, M, L, XL, XXL, One Size
+  color     String?
+  quantity  Int
+  designNotes String?
+  designFileName String?
+  designFilePath String?
+  deadline  String?
+  status    String  @default("pending") // pending, confirmed, completed, cancelled
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+}

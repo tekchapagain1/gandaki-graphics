@@ -4,3 +4,5 @@ readme.md
 DEPLOY.md
 .DS_Store
 *.log
+/src/generated/prisma
+.env
