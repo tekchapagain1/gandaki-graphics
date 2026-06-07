@@ -4,5 +4,4 @@ node_modules/
 *.log
 /src/generated/prisma
 .env
-.env.local
 *.md
