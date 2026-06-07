@@ -7,3 +7,4 @@ DEPLOY.md
 /src/generated/prisma
 .env
 .env.local
+*.md

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { formatDistanceToNow } from 'date-fns'
+import AdminGallery from './AdminGallery'
 
 interface Order {
   id: number
@@ -48,6 +49,7 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
   const [updatingId, setUpdatingId] = useState<number | null>(null)
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [expandedLogIndex, setExpandedLogIndex] = useState<number | null>(null)
+  const [activeTab, setActiveTab] = useState<'orders' | 'gallery'>('orders')
 
   useEffect(() => {
     fetchOrders()
@@ -164,7 +166,7 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
               <div>
                 <p className="text-xs uppercase tracking-[0.24em] text-white/60 mb-1">Admin dashboard</p>
                 <h1 className="text-2xl md:text-3xl font-semibold">Gandaki Graphics</h1>
-                <p className="text-sm text-white/70 mt-1">Manage orders, status, and uploaded design files</p>
+                <p className="text-sm text-white/70 mt-1">Manage orders, gallery items, and design assets</p>
               </div>
             </div>
             <button
@@ -176,7 +178,36 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
           </div>
         </div>
 
-        <div className="p-6 md:p-8 flex flex-col gap-6">
+        {/* Tab Switcher */}
+        <div className="border-b border-gray-100 bg-gray-50 flex px-6 md:px-8">
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`py-4 px-4 font-semibold text-sm border-b-2 transition-colors -mb-px ${
+              activeTab === 'orders'
+                ? 'border-gray-900 text-gray-900'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            📋 Orders & Security Logs
+          </button>
+          <button
+            onClick={() => setActiveTab('gallery')}
+            className={`py-4 px-4 font-semibold text-sm border-b-2 transition-colors -mb-px ${
+              activeTab === 'gallery'
+                ? 'border-gray-900 text-gray-900'
+                : 'border-transparent text-gray-500 hover:text-gray-900'
+            }`}
+          >
+            🎨 Gallery Manager
+          </button>
+        </div>
+
+        {activeTab === 'gallery' ? (
+          <div className="p-6 md:p-8">
+            <AdminGallery />
+          </div>
+        ) : (
+          <div className="p-6 md:p-8 flex flex-col gap-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-semibold text-gray-900">Orders</h2>
@@ -320,9 +351,11 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
             </div>
           )}
         </div>
+        )}
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6 md:p-8">
+      {activeTab === 'orders' && (
+        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm p-6 md:p-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
           <div>
             <p className="text-xs font-medium tracking-[0.2em] uppercase text-gray-400 mb-2">
@@ -412,6 +445,7 @@ export default function AdminOrders({ onLogout }: { onLogout: () => void }) {
           </div>
         )}
       </div>
+      )}
     </div>
   )
 }

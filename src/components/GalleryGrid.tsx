@@ -1,22 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
 type Category = 'All' | 'T-shirts' | 'Hoodies' | 'Cups'
 
-const galleryItems = [
-  { id: 1, category: 'T-shirts', title: 'Graphic Tee — Bold Print', desc: 'Full-color front print', color: '#F1EFE8', accent: '#5F5E5A', image: '/gallery/tshirt1.png', rating: 5, customer: 'Sarah M.', review: 'The colors came out exactly how we wanted.' },
-  { id: 2, category: 'Hoodies', title: 'Pullover Hoodie', desc: 'Chest logo + back design', color: '#E6F1FB', accent: '#185FA5', image: '/gallery/hoodie1.png', rating: 5, customer: 'Aarav K.', review: 'Soft fabric, clean print, and fast delivery.' },
-  { id: 3, category: 'Cups',     title: 'Custom Mug — Wrap Print', desc: '360° wraparound design', color: '#E1F5EE', accent: '#0F6E56', image: '/gallery/cup1.png', rating: 5, customer: 'Mina T.', review: 'A perfect gift. The mug print looks premium.' },
-  { id: 4, category: 'T-shirts', title: 'Event Tee — Team Design', desc: 'Multi-color artwork', color: '#FAEEDA', accent: '#854F0B', image: '/gallery/tshirt2.png', rating: 5, customer: 'Rita P.', review: 'Our event shirts arrived right on time.' },
-  { id: 5, category: 'T-shirts', title: 'Minimalist Pocket Tee', desc: 'Small chest print', color: '#FCEBEB', accent: '#A32D2D', image: '/gallery/tshirt3.png', rating: 5, customer: 'Anil S.', review: 'Small details were sharp and durable.' },
-  { id: 6, category: 'Hoodies', title: 'Zip-up Hoodie', desc: 'Sleeve & back graphics', color: '#FBEAF0', accent: '#993556', image: '/gallery/hoodie2.png', rating: 5, customer: 'Nisha B.', review: 'Great embroidery look without the embroidery price.' },
-  { id: 7, category: 'Cups',    title: 'Gift Mug Set', desc: 'Custom name + pattern', color: '#EAF3DE', accent: '#3B6D11', image: '/gallery/cup2.png', rating: 5, customer: 'Dev P.', review: 'The gift set was a hit with our team.' },
-  { id: 8, category: 'T-shirts', title: 'Kids Tee — Cartoon Art', desc: 'Bright full-front print', color: '#E6F1FB', accent: '#185FA5', image: '/gallery/tshirt4.png', rating: 5, customer: 'Priya S.', review: 'Bright, playful, and really well made.' },
-  { id: 9, category: 'Hoodies', title: 'Oversized Hoodie', desc: 'Large back graphic', color: '#F1EFE8', accent: '#444441', image: '/gallery/hoodie3.png', rating: 5, customer: 'Kiran G.', review: 'The oversized fit looked exactly as expected.' },
-]
+
 
 // SVG placeholder illustrations per category
 function PlaceholderIllustration({ category, color, accent }: { category: string; color: string; accent: string }) {
@@ -65,12 +55,45 @@ function PlaceholderIllustration({ category, color, accent }: { category: string
 
 const CATEGORIES: Category[] = ['All', 'T-shirts', 'Hoodies', 'Cups']
 
+interface GalleryItem {
+  id: number
+  category: string
+  title: string
+  desc: string
+  color: string
+  accent: string
+  image: string
+  rating: number
+  customer: string
+  review: string
+}
+
 export default function GalleryGrid() {
   const [active, setActive] = useState<Category>('All')
+  const [items, setItems] = useState<GalleryItem[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchGallery() {
+      try {
+        setLoading(true)
+        const response = await fetch('/api/gallery')
+        if (!response.ok) throw new Error('Failed to fetch gallery items')
+        const data = await response.json()
+        setItems(data.items || [])
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchGallery()
+  }, [])
 
   const filtered = active === 'All'
-    ? galleryItems
-    : galleryItems.filter((item) => item.category === active)
+    ? items
+    : items.filter((item) => item.category === active)
 
   return (
     <section className="max-w-5xl mx-auto px-6 py-16">
@@ -104,49 +127,63 @@ export default function GalleryGrid() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        {filtered.map((item) => (
-          <div
-            key={item.id}
-            className="group card overflow-hidden hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-pointer"
-          >
-            {/* Image area */}
-<div className="aspect-square overflow-hidden relative">
-  <Image
-    src={item.image}
-    alt={item.title}
-    fill
-    loading="lazy"
-    className="object-cover"
-  />
-</div>
+      {loading ? (
+        <div className="text-center py-20">
+          <p className="text-gray-500 font-light">Loading gallery...</p>
+        </div>
+      ) : error ? (
+        <div className="text-center py-20 bg-red-50 border border-red-100 rounded-xl">
+          <p className="text-red-700 text-sm font-medium">{error}</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-20 border border-dashed border-gray-200 rounded-xl bg-gray-50">
+          <p className="text-gray-500 font-light">No items found in this category.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          {filtered.map((item) => (
+            <div
+              key={item.id}
+              className="group card overflow-hidden hover:shadow-md hover:border-gray-200 transition-all duration-200 cursor-pointer"
+            >
+              {/* Image area */}
+              <div className="aspect-square overflow-hidden relative" style={{ backgroundColor: item.color }}>
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  loading="lazy"
+                  className="object-cover"
+                />
+              </div>
 
-            {/* Caption */}
-            <div className="p-4 border-t border-gray-100">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm font-medium leading-snug">{item.title}</p>
-                  <p className="text-xs font-light text-gray-400 mt-0.5">{item.desc}</p>
-                  <div className="flex items-center gap-1 mt-2">
-                    {Array.from({ length: item.rating }).map((_, idx) => (
-                      <span key={idx} className="text-[10px]">⭐</span>
-                    ))}
+              {/* Caption */}
+              <div className="p-4 border-t border-gray-100">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-medium leading-snug">{item.title}</p>
+                    <p className="text-xs font-light text-gray-400 mt-0.5">{item.desc}</p>
+                    <div className="flex items-center gap-1 mt-2">
+                      {Array.from({ length: item.rating }).map((_, idx) => (
+                        <span key={idx} className="text-[10px]">⭐</span>
+                      ))}
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-1">
+                      By {item.customer} · “{item.review}”
+                    </p>
                   </div>
-                  <p className="text-[11px] text-gray-500 mt-1">
-                    By {item.customer} · “{item.review}”
-                  </p>
+                  <span
+                    className="shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full mt-0.5"
+                    style={{ color: item.accent, backgroundColor: item.color }}
+                  >
+                    {item.category}
+                  </span>
                 </div>
-                <span
-                  className="shrink-0 text-[10px] font-medium px-2 py-0.5 rounded-full mt-0.5"
-                  style={{ color: item.accent, backgroundColor: item.color }}
-                >
-                  {item.category}
-                </span>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Bottom CTA */}
       <div className="mt-12 border border-gray-100 rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-4 bg-gray-50">

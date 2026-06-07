@@ -3,6 +3,7 @@ import { promises as fs } from 'fs'
 import { randomBytes, randomInt } from 'crypto'
 import path from 'path'
 import { prisma } from '@/lib/prisma'
+import { uploadToCloudinary } from '@/lib/cloudinary'
 import { sendOrderConfirmation } from '@/lib/email'
 import {
   createRateLimiter,
@@ -204,17 +205,40 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'designs')
-      await fs.mkdir(uploadsDir, { recursive: true })
-
-      const safeName = sanitizeFilename(uploadedDesignFile.name)
-      const storedFileName = `${Date.now()}-${safeName}`
       const fileBuffer = Buffer.from(await uploadedDesignFile.arrayBuffer())
-
-      await fs.writeFile(path.join(uploadsDir, storedFileName), fileBuffer)
-
       designFileName = uploadedDesignFile.name
-      designFilePath = `/uploads/designs/${storedFileName}`
+
+      // Image types: attempt Cloudinary upload for CDN delivery
+      const isImageType = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(
+        uploadedDesignFile.type
+      )
+
+      let cloudUploaded = false
+      if (isImageType) {
+        const cloudResult = await uploadToCloudinary(fileBuffer, {
+          folder: 'gandaki-graphics/designs',
+          resourceType: 'image',
+        })
+
+        if (cloudResult) {
+          designFilePath = cloudResult.url
+          cloudUploaded = true
+          console.log('☁️  Design file uploaded to Cloudinary:', cloudResult.url)
+        }
+      }
+
+      // For non-image files or if Cloudinary upload failed/not configured — save locally
+      if (!cloudUploaded) {
+        const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'designs')
+        await fs.mkdir(uploadsDir, { recursive: true })
+
+        const safeName = sanitizeFilename(uploadedDesignFile.name)
+        const storedFileName = `${Date.now()}-${safeName}`
+
+        await fs.writeFile(path.join(uploadsDir, storedFileName), fileBuffer)
+        designFilePath = `/uploads/designs/${storedFileName}`
+        console.log('💾  Design file saved locally:', designFilePath)
+      }
     }
 
     // 5. Create order
