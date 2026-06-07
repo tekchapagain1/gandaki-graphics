@@ -16,7 +16,7 @@ interface GalleryItem {
   createdAt: string
 }
 
-const CATEGORIES = ['T-shirts', 'Hoodies', 'Cups']
+const CATEGORIES = ['T-shirts', 'Hoodies', 'Cups' , 'Marriage Scarf', ]
 
 const COLOR_PRESETS = [
   { name: 'Warm Cream / Gray', color: '#F1EFE8', accent: '#5F5E5A' },
