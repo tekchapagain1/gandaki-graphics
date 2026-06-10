@@ -8,16 +8,25 @@ export default function Navbar() {
 
   return (
     <nav className="border-b border-gray-100 bg-white sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="flex flex-col gap-0.5">
-          <span className="font-display text-base font-medium tracking-wide">
-            Gandaki Graphics
-          </span>
-          <span className="text-[10px] font-light tracking-[0.18em] uppercase text-gray-400">
-            Custom DTF Printing
-          </span>
+        <Link href="/" className="flex items-center gap-3 group">
+          <div className="relative w-11 h-11 rounded-xl overflow-hidden bg-gray-100 border border-gray-200 shrink-0 transition-transform group-hover:scale-105">
+            <img
+              src="/gallery/logo.png"
+              alt="Gandaki Graphics"
+              className="w-full h-full object-contain p-1"
+            />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <span className="font-display text-base font-medium tracking-wide">
+              Gandaki Graphics
+            </span>
+            <span className="text-[10px] font-light tracking-[0.18em] uppercase text-gray-400">
+              Custom DTF Printing
+            </span>
+          </div>
         </Link>
 
         {/* Desktop links */}

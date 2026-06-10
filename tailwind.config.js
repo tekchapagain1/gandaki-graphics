@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
+        display: ['Playfair Display', 'Georgia', 'serif'],
         serif: ['Playfair Display', 'Georgia', 'serif'],
         sans: ['DM Sans', 'system-ui', 'sans-serif'],
       },

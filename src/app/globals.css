@@ -22,10 +22,6 @@ body {
 }
 
 @layer components {
-  .font-display {
-    font-family: 'Playfair Display', Georgia, serif;
-  }
-
   .btn-primary {
     @apply inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-xs font-medium tracking-widest uppercase rounded-lg hover:bg-gray-700 transition-colors duration-200;
   }
@@ -55,5 +51,62 @@ body {
 
   .card {
     @apply bg-white border border-gray-100 rounded-xl;
+  }
+
+  .animate-in {
+    animation: fadeInUp 0.8s ease-out both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .float-1 {
+    animation: float1 6s ease-in-out infinite;
+  }
+  .float-2 {
+    animation: float2 7s ease-in-out infinite;
+  }
+  .float-3 {
+    animation: float3 8s ease-in-out infinite;
+  }
+
+  @keyframes float1 {
+    0%, 100% { transform: translateY(0px) rotateY(-8deg) rotateX(4deg); }
+    50% { transform: translateY(-12px) rotateY(-5deg) rotateX(6deg); }
+  }
+  @keyframes float2 {
+    0%, 100% { transform: translateY(0px) rotateY(5deg) rotateX(-3deg); }
+    50% { transform: translateY(-16px) rotateY(8deg) rotateX(-5deg); }
+  }
+  @keyframes float3 {
+    0%, 100% { transform: translateY(0px) rotateY(-4deg) rotateX(-2deg); }
+    50% { transform: translateY(-10px) rotateY(-6deg) rotateX(-4deg); }
+  }
+
+  @keyframes shadowPulse {
+    0%, 100% { opacity: 0.08; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.03; transform: translateX(-50%) scale(0.8); }
+  }
+
+  .badge-fade-in {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  .float-cta {
+    animation: floatCta 3s ease-in-out infinite;
+  }
+
+  @keyframes floatCta {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-3px); }
   }
 }

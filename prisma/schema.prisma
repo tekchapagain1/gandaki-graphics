@@ -6,35 +6,9 @@ datasource db {
   provider = "postgresql"
 }
 
-model Order {
-  id        Int     @id @default(autoincrement())
-  orderCode String? @unique
-  name      String
-  email     String?
-  phone     String?
-  product   String  // T-shirt, Hoodie, Cup
-  size      String? // XS, S, M, L, XL, XXL, One Size
-  color     String?
-  quantity  Int
-  designNotes String?
-  designFileName String?
-  designFilePath String?
-  deadline  String?
-  status    String  @default("pending") // pending, confirmed, completed, cancelled
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Admin {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  passwordHash String
-  createdAt DateTime @default(now())
-}
-
 model GalleryItem {
   id        Int      @id @default(autoincrement())
-  category  String   // T-shirts, Hoodies, Cups
+  category  String
   title     String
   desc      String
   color     String
@@ -47,3 +21,28 @@ model GalleryItem {
   updatedAt DateTime @updatedAt
 }
 
+model Order {
+  id        Int      @id @default(autoincrement())
+  orderCode String   @unique
+  email     String
+  name      String
+  phone     String?
+  product   String   // T-shirt, Hoodie, Cup
+  size      String?  // XS, S, M, L, XL, XXL, One Size
+  color     String?
+  quantity  Int
+  designNotes String?
+  designFileName String?
+  designFilePath String?
+  deadline  String?
+  status    String   @default("pending") // pending, confirmed, completed, cancelled
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  passwordHash String
+  createdAt DateTime @default(now())
+}

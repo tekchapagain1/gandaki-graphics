@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 const testimonials = [
   {
@@ -40,13 +40,18 @@ const testimonials = [
 export default function Testimonials() {
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const nextTestimonial = () => {
+  const nextTestimonial = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length)
-  }
+  }, [])
 
   const prevTestimonial = () => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
   }
+
+  useEffect(() => {
+    const timer = setInterval(nextTestimonial, 5000)
+    return () => clearInterval(timer)
+  }, [nextTestimonial])
 
   const current = testimonials[currentIndex]
 

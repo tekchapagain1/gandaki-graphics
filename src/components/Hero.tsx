@@ -1,12 +1,22 @@
+'use client'
+
 import Link from 'next/link'
-import Image from 'next/image'
+import dynamic from 'next/dynamic'
+
+const Product3DScene = dynamic(() => import('@/components/Product3DScene'), { ssr: false })
+
+const badges = [
+  { text: '500+ happy customers', delay: '0ms' },
+  { text: '2-3 day turnaround', delay: '150ms' },
+  { text: 'Quality guaranteed', delay: '300ms' },
+]
 
 export default function Hero() {
   return (
     <section className="max-w-5xl mx-auto px-6 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
 
       {/* Left: Text */}
-      <div>
+      <div className="animate-in">
         <span
           className="inline-block text-[10px] font-medium tracking-[0.15em] uppercase px-3 py-1.5 rounded-full mb-6"
           style={{ color: '#185FA5', backgroundColor: '#E6F1FB' }}
@@ -26,84 +36,36 @@ export default function Hero() {
         </p>
 
         <div className="flex flex-wrap gap-3">
-          <Link href="/order" className="btn-primary">
-            Start your order →
+          <Link href="/order" className="btn-primary group float-cta">
+            Start your order
+            <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
           </Link>
-          <Link href="/gallery" className="btn-outline">
+          <Link href="/gallery" className="btn-outline group">
             View gallery
+            <span className="inline-block transition-transform group-hover:translate-x-1">→</span>
           </Link>
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2 text-[11px] font-medium text-gray-500">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
-            <span className="text-green-500">✓</span>
-            500+ happy customers
-          </span>
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
-            <span className="text-green-500">✓</span>
-            2-3 day turnaround
-          </span>
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100">
-            <span className="text-green-500">✓</span>
-            Quality guaranteed
-          </span>
+          {badges.map((badge) => (
+            <span
+              key={badge.text}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-100 badge-fade-in"
+              style={{ animationDelay: badge.delay }}
+            >
+              <span className="text-green-500">✓</span>
+              {badge.text}
+            </span>
+          ))}
         </div>
       </div>
 
-      {/* Right: Visual card */}
-      <div className="relative">
-        <div className="bg-gray-50 border border-gray-100 rounded-2xl p-8 aspect-[4/3] flex flex-col justify-end overflow-hidden relative">
-
-          {/* Background icon */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-            <svg
-              width="160"
-              height="160"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="0.4"
-              className="text-gray-900 opacity-[0.05]"
-            >
-              {/* T-shirt outline */}
-              <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.57a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.57a2 2 0 0 0-1.34-2.23z" />
-            </svg>
-          </div>
-
-          {/* Featured image (place a file at public/images/featured.jpg) */}
-          <div className="absolute inset-0 flex items-center justify-center z-0 pointer-events-none">
-            <Image
-              src="/gallery/logo.png"
-              alt="Featured product"
-              fill
-              loading="lazy"
-              className="object-contain p-4 md:p-8"
-            />
-          </div>
-
-          {/* Floating tag */}
-          <div className="absolute top-4 right-4 bg-white border border-gray-100 rounded-lg px-3 py-2 shadow-sm z-10">
-            <p className="text-xs font-medium text-gray-900">DTF Print</p>
-            <p className="text-[11px] text-gray-400 font-light">Full-color, any design</p>
-          </div>
-
-          {/* Card label */}
-          <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-gray-400 mb-1 relative z-10">
-            Featured product
-          </p>
-          <p className="font-display text-xl font-normal relative z-10">
-            Custom Apparel<br />& Cup Printing
-          </p>
-        </div>
-
-        {/* Decorative dot grid */}
-        <div
-          className="absolute -bottom-4 -right-4 w-24 h-24 opacity-20 pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(circle, #9ca3af 1px, transparent 1px)',
-            backgroundSize: '8px 8px',
-          }}
+      {/* Right: 3D T-shirt */}
+      <div className="relative w-full h-[520px] md:h-[600px] flex items-center justify-center">
+        <div className="absolute w-80 h-80 md:w-96 md:h-96 rounded-full opacity-[0.07] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, #185FA5 0%, transparent 70%)' }}
         />
+        <Product3DScene />
       </div>
 
     </section>
